@@ -1,4 +1,4 @@
-package com.studySNS.sns.controller;
+package com.fast.campus.simplesns.controller;
 
 import com.fast.campus.simplesns.controller.request.UserJoinRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
