@@ -1,11 +1,15 @@
 package com.fast.campus.simplesns.controller;
 
+import com.fast.campus.simplesns.controller.request.PostWriteRequest;
 import com.fast.campus.simplesns.controller.request.UserJoinRequest;
+import com.fast.campus.simplesns.exception.ErrorCode;
+import com.fast.campus.simplesns.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,21 +25,20 @@ public class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper;
+    @MockBean
+    PostService postService;
 
-    public PostControllerTest(@Autowired ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
+
 
     @Test
     @WithMockUser
     void 포스트작성() throws Exception {
-        String title = "title";
-        String body = "body";
 
         mockMvc.perform(post("/api/v1/posts")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(new PostCreateRequest(title, body)))
+                .content(objectMapper.writeValueAsBytes(new PostWriteRequest("title", "body")))
         ).andDo(print())
                 .andExpect(status().isOk());
 
@@ -43,15 +46,13 @@ public class PostControllerTest {
 
     @Test
     @WithMockUser
-    void 포스트작성시_로그인하지않은경우() throws Exception {
-        String title = "title";
-        String body = "body";
+    void 포스트작성시_로그인하지않은경우_에러발생() throws Exception {
 
         mockMvc.perform(post("/api/v1/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(new PostCreateRequest(title, body)))
+                        .content(objectMapper.writeValueAsBytes(new PostWriteRequest("title", "body")))
                 ).andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().is(ErrorCode.INAVLID_TOKEN.getStatus().value()));
 
     }
 

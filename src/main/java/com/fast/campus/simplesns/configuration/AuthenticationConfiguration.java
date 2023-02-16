@@ -1,6 +1,7 @@
 package com.fast.campus.simplesns.configuration;
 
 import com.fast.campus.simplesns.configuration.filter.JwtTokenFilter;
+import com.fast.campus.simplesns.exception.CustomAuthenticationEntryPoint;
 import com.fast.campus.simplesns.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
