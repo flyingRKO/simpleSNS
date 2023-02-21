@@ -4,6 +4,8 @@ import com.fast.campus.simplesns.model.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -13,6 +15,8 @@ import java.time.Instant;
 @Getter
 @Entity
 @Table(name = "\"post\"")
+@SQLDelete(sql = "UPDATE \"post\" SET removed_at = NOW() WHERE id=?")
+@Where(clause = "removed_at is NULL")
 @NoArgsConstructor
 public class PostEntity {
 
