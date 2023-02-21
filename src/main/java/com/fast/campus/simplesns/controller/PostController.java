@@ -1,5 +1,6 @@
 package com.fast.campus.simplesns.controller;
 
+import com.fast.campus.simplesns.controller.request.PostModifyRequest;
 import com.fast.campus.simplesns.controller.request.PostWriteRequest;
 import com.fast.campus.simplesns.controller.response.PostResponse;
 import com.fast.campus.simplesns.controller.response.Response;
@@ -31,6 +32,14 @@ public class PostController {
     @GetMapping("/my")
     public Response<Page<PostResponse>> myPost(Pageable pageable, Authentication authentication) {
         return Response.success(postService.my(authentication.getName(), pageable).map(PostResponse::fromPost));
+    }
+
+    public Response<PostResponse> modify(@PathVariable Integer postId,
+                                         @RequestBody PostModifyRequest request,
+                                         Authentication authentication) {
+        return Response.success(
+                PostResponse.fromPost(
+                        postService.modify(authentication.getName(), postId, request.getTitle(), request.getBody())));
     }
 
 
