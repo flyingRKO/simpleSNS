@@ -1,7 +1,6 @@
 package com.fast.campus.simplesns.controller;
 
 import com.fast.campus.simplesns.controller.request.PostWriteRequest;
-import com.fast.campus.simplesns.controller.request.UserJoinRequest;
 import com.fast.campus.simplesns.exception.ErrorCode;
 import com.fast.campus.simplesns.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +51,7 @@ public class PostControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(new PostWriteRequest("title", "body")))
                 ).andDo(print())
-                .andExpect(status().is(ErrorCode.INAVLID_TOKEN.getStatus().value()));
+                .andExpect(status().is(ErrorCode.INVALID_TOKEN.getStatus().value()));
 
     }
 

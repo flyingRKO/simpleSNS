@@ -1,12 +1,14 @@
 package com.fast.campus.simplesns.controller;
 
 import com.fast.campus.simplesns.controller.request.PostWriteRequest;
+import com.fast.campus.simplesns.controller.response.PostResponse;
+import com.fast.campus.simplesns.controller.response.Response;
 import com.fast.campus.simplesns.service.PostService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -15,7 +17,21 @@ public class PostController {
 
     private final PostService postService;
 
-    public void create(@RequestBody PostWriteRequest request, Authentication authentication) {
+    @PostMapping
+    public Response<Void> create(@RequestBody PostWriteRequest request, Authentication authentication) {
         postService.create(authentication.getName(), request.getTitle(), request.getBody());
+        return Response.success();
     }
+
+    @GetMapping
+    public Response<Page<PostResponse>> list(Pageable pageable, Authentication authentication) {
+        return Response.success(postService.list(pageable).map(PostResponse::fromPost));
+    }
+
+    @GetMapping("/my")
+    public Response<Page<PostResponse>> myPost(Pageable pageable, Authentication authentication) {
+        return Response.success(postService.my(authentication.getName(), pageable).map(PostResponse::fromPost));
+    }
+
+
 }
