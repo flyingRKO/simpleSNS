@@ -4,6 +4,7 @@ import com.fast.campus.simplesns.exception.ErrorCode;
 import com.fast.campus.simplesns.exception.SimpleSnsApplicationException;
 import com.fast.campus.simplesns.fixture.UserEntityFixture;
 import com.fast.campus.simplesns.model.entity.PostEntity;
+import com.fast.campus.simplesns.model.entity.UserEntity;
 import com.fast.campus.simplesns.repository.PostEntityRepository;
 import com.fast.campus.simplesns.repository.UserEntityRepository;
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -56,6 +58,118 @@ public class PostServiceTest {
                 () -> postService.create(userName, title, body));
 
         Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    void 내_포스트리스트를_가져올_유저가_존재하지_않으면_에러를_띄운다() {
+        String userName = "name";
+        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.empty());
+
+        SimpleSnsApplicationException exception =
+                Assertions.assertThrows(SimpleSnsApplicationException.class,
+                        () -> postService.my(userName, mock(Pageable.class)));
+
+        Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    void 포스트수정시_포스트가_존재하지_않으면_에러를_띄운다() {
+        Integer postId = 1;
+        String userName = "name";
+        String title = "title";
+        String body = "body";
+        when(postEntityRepository.findById(postId)).thenReturn(Optional.empty());
+
+        SimpleSnsApplicationException exception =
+                Assertions.assertThrows(SimpleSnsApplicationException.class,
+                        () -> postService.modify(userName,postId, title,body));
+
+        Assertions.assertEquals(ErrorCode.POST_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    void 포스트수정시_유저가_존재하지_않으면_에러를_띄운다() {
+        Integer postId = 1;
+        String userName = "name";
+        String title = "title";
+        String body = "body";
+        when(postEntityRepository.findById(postId)).thenReturn(Optional.of(mock(PostEntity.class)));
+        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.empty());
+
+        SimpleSnsApplicationException exception =
+                Assertions.assertThrows(SimpleSnsApplicationException.class,
+                        () -> postService.modify(userName,postId, title,body));
+
+        Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    void 포스트수정시_작성자와_유저가_일치하지_않으면_에러를_띄운다() {
+        PostEntity mockPostEntity = mock(PostEntity.class);
+        UserEntity mockUserEntity = mock(UserEntity.class);
+
+        Integer postId = 1;
+        String userName = "name";
+        String title = "title";
+        String body = "body";
+
+        when(postEntityRepository.findById(postId)).thenReturn(Optional.of(mockPostEntity));
+        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(mockUserEntity));
+        when(mockPostEntity.getUser()).thenReturn(mock(UserEntity.class));
+
+        SimpleSnsApplicationException exception =
+                Assertions.assertThrows(SimpleSnsApplicationException.class,
+                        () -> postService.modify(userName,postId, title,body));
+
+        Assertions.assertEquals(ErrorCode.INVALID_PERMISSION, exception.getErrorCode());
+    }
+
+    @Test
+    void 포스트삭제시_포스트가_존재하지_않으면_에러를_띄운다() {
+        Integer postId = 1;
+        String userName = "name";
+
+        when(postEntityRepository.findById(postId)).thenReturn(Optional.empty());
+
+        SimpleSnsApplicationException exception =
+                Assertions.assertThrows(SimpleSnsApplicationException.class,
+                        () -> postService.delete(userName,postId));
+
+        Assertions.assertEquals(ErrorCode.POST_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    void 포스트삭제시_유저가_존재하지_않으면_에러를_띄운다() {
+        Integer postId = 1;
+        String userName = "name";
+
+        when(postEntityRepository.findById(postId)).thenReturn(Optional.of(mock(PostEntity.class)));
+        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.empty());
+
+        SimpleSnsApplicationException exception =
+                Assertions.assertThrows(SimpleSnsApplicationException.class,
+                        () -> postService.delete(userName,postId));
+
+        Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    void 포스트삭제시_작성자와_유저가_일치하지_않으면_에러를_띄운다() {
+        PostEntity mockPostEntity = mock(PostEntity.class);
+        UserEntity mockUserEntity = mock(UserEntity.class);
+
+        Integer postId = 1;
+        String userName = "name";
+
+        when(postEntityRepository.findById(postId)).thenReturn(Optional.of(mockPostEntity));
+        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(mockUserEntity));
+        when(mockPostEntity.getUser()).thenReturn(mock(UserEntity.class));
+
+        SimpleSnsApplicationException exception =
+                Assertions.assertThrows(SimpleSnsApplicationException.class,
+                        () -> postService.delete(userName,postId));
+
+        Assertions.assertEquals(ErrorCode.INVALID_PERMISSION, exception.getErrorCode());
     }
 
 
