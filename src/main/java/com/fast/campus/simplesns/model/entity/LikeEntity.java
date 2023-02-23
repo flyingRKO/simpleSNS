@@ -1,6 +1,5 @@
 package com.fast.campus.simplesns.model.entity;
 
-import com.fast.campus.simplesns.model.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,38 +9,27 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
 
 @Setter
 @Getter
 @Entity
-@Table(name = "\"post\"")
-@SQLDelete(sql = "UPDATE \"post\" SET removed_at = NOW() WHERE id=?")
+@Table(name = "\"like\"")
+@SQLDelete(sql = "UPDATE \"like\" SET removed_at = NOW() WHERE id=?")
 @Where(clause = "removed_at is NULL")
 @NoArgsConstructor
-public class PostEntity {
+public class LikeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = null;
 
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "body", columnDefinition = "TEXT")
-    private String body;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "post_id")
-    private List<CommentEntity> comments;
-
-    @OneToMany
-    @JoinColumn(name = "post_id")
-    private List<LikeEntity> likes;
+    private PostEntity post;
 
     @Column(name = "registered_at")
     private Timestamp registeredAt;
@@ -51,7 +39,6 @@ public class PostEntity {
 
     @Column(name = "removed_at")
     private Timestamp removedAt;
-
 
     @PrePersist
     void registeredAt() {
@@ -63,10 +50,9 @@ public class PostEntity {
         this.updatedAt = Timestamp.from(Instant.now());
     }
 
-    public static PostEntity of(String title, String body, UserEntity user) {
-        PostEntity entity = new PostEntity();
-        entity.setTitle(title);
-        entity.setBody(body);
+    public static LikeEntity of(PostEntity post, UserEntity user) {
+        LikeEntity entity = new LikeEntity();
+        entity.setPost(post);
         entity.setUser(user);
         return entity;
     }

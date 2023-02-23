@@ -17,6 +17,7 @@ public class Post {
     private String body;
     private User user;
     private List<Comment> comments;
+    private List<Like> likes;
     private Timestamp registeredAt;
     private Timestamp updatedAt;
     private Timestamp removedAt;
@@ -28,6 +29,7 @@ public class Post {
                 entity.getBody(),
                 User.fromEntity(entity.getUser()),
                 entity.getComments().stream().map(Comment::fromEntity).collect(Collectors.toList()),
+                entity.getLikes().stream().map(Like::fromEntity).collect(Collectors.toList()),
                 entity.getRegisteredAt(),
                 entity.getUpdatedAt(),
                 entity.getRemovedAt()

@@ -4,9 +4,11 @@ import com.fast.campus.simplesns.exception.ErrorCode;
 import com.fast.campus.simplesns.exception.SimpleSnsApplicationException;
 import com.fast.campus.simplesns.model.Post;
 import com.fast.campus.simplesns.model.entity.CommentEntity;
+import com.fast.campus.simplesns.model.entity.LikeEntity;
 import com.fast.campus.simplesns.model.entity.PostEntity;
 import com.fast.campus.simplesns.model.entity.UserEntity;
 import com.fast.campus.simplesns.repository.CommentEntityRepository;
+import com.fast.campus.simplesns.repository.LikeEntityRepository;
 import com.fast.campus.simplesns.repository.PostEntityRepository;
 import com.fast.campus.simplesns.repository.UserEntityRepository;
 import lombok.AllArgsConstructor;
@@ -23,6 +25,8 @@ public class PostService {
     private final PostEntityRepository postEntityRepository;
 
     private final CommentEntityRepository commentEntityRepository;
+
+    private final LikeEntityRepository likeEntityRepository;
 
     @Transactional
     public void create(String userName, String title, String body) {
@@ -87,6 +91,22 @@ public class PostService {
                 new SimpleSnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("userName is %s", userName)));
 
         commentEntityRepository.save(CommentEntity.of(comment, postEntity, userEntity));
+    }
+
+    @Transactional
+    public void like(Integer postId, String userName) {
+
+        PostEntity postEntity = postEntityRepository.findById(postId).orElseThrow(() ->
+                new SimpleSnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("postId is %d", postId)));
+
+        UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(() ->
+                new SimpleSnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("userName is %s", userName)));
+
+        likeEntityRepository.findByUserAndPost(userEntity, postEntity).ifPresent(it -> {
+            throw new SimpleSnsApplicationException(ErrorCode.ALREADY_LIKED_POST, String.format("userName %s already like the post %s", userName, postId));
+        });
+        likeEntityRepository.save(LikeEntity.of(postEntity, userEntity));
+
     }
 
 
