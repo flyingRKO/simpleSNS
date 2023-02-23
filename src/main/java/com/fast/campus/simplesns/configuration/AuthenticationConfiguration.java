@@ -27,6 +27,7 @@ public class AuthenticationConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${jwt.secret-key}")
     private String secretKey;
 
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(encoder);
@@ -34,19 +35,15 @@ public class AuthenticationConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-                .antMatchers("/", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg",
-                        "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/manifest.json", "/static/**")
-                .antMatchers("/resources/**")
-                .antMatchers(HttpMethod.POST, "/api/*/users/join", "/api/*/users/login")
-                .antMatchers(HttpMethod.GET, "/post", "/authentication/sign-in", "/authentication/sign-up",
-                        "/my-post", "/feed");
+        web.ignoring().antMatchers("**.json", "/", "**.js", "**.html", "**.jpg", "**.png",
+                "**/static/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/api/*/users/join", "/api/*/users/login").permitAll()
                 .antMatchers("/api/**").authenticated()
                 .and()
                 .sessionManagement()
