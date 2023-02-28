@@ -12,9 +12,9 @@ import java.util.Date;
 
 public class JwtTokenUtils {
 
-    public static Boolean validate(String token, UserDetails userDetails, String key) {
-        String username = getUsername(token, key);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token, key);
+    public static Boolean validate(String token, String userName, String key) {
+        String usernameByToken = getUsername(token, key);
+        return usernameByToken.equals(userName) && !isTokenExpired(token, key);
     }
 
     public static Claims extractAllClaims(String token, String key) {
@@ -43,11 +43,8 @@ public class JwtTokenUtils {
         return doGenerateToken(username, expiredTimeMs, key);
     }
 
-    public static String generateRefreshToken(String username, String key, long expiredTimeMs) {
-        return doGenerateToken(username, expiredTimeMs, key);
-    }
 
-    private static String doGenerateToken(String username, long expireTime, String key) { // 1
+    private static String doGenerateToken(String username, long expireTime, String key) {
         Claims claims = Jwts.claims();
         claims.put("username", username);
 
@@ -60,9 +57,5 @@ public class JwtTokenUtils {
     }
 
 
-    public static long getRemainMilliSeconds(String token, String key) {
-        Date expiration = extractAllClaims(token, key).getExpiration();
-        return expiration.getTime() - new Date().getTime();
-    }
 
 }
