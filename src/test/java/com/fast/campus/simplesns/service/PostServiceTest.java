@@ -64,7 +64,7 @@ public class PostServiceTest {
 
         SimpleSnsApplicationException exception =
                 Assertions.assertThrows(SimpleSnsApplicationException.class,
-                        () -> postService.modify(fixture.getUserName(), fixture.getPostId(), fixture.getTitle(), fixture.getBody()));
+                        () -> postService.modify(fixture.getUserId(), fixture.getPostId(), fixture.getTitle(), fixture.getBody()));
 
         Assertions.assertEquals(ErrorCode.POST_NOT_FOUND, exception.getErrorCode());
     }
@@ -77,7 +77,7 @@ public class PostServiceTest {
 
         SimpleSnsApplicationException exception =
                 Assertions.assertThrows(SimpleSnsApplicationException.class,
-                        () -> postService.modify(fixture.getUserName(), fixture.getPostId(), fixture.getTitle(), fixture.getBody()));
+                        () -> postService.modify(fixture.getUserId(), fixture.getPostId(), fixture.getTitle(), fixture.getBody()));
 
         Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
     }
@@ -94,7 +94,7 @@ public class PostServiceTest {
 
         SimpleSnsApplicationException exception =
                 Assertions.assertThrows(SimpleSnsApplicationException.class,
-                        () -> postService.modify(fixture.getUserName(), fixture.getPostId(), fixture.getTitle(), fixture.getBody()));
+                        () -> postService.modify(fixture.getUserId(), fixture.getPostId(), fixture.getTitle(), fixture.getBody()));
 
         Assertions.assertEquals(ErrorCode.INVALID_PERMISSION, exception.getErrorCode());
     }
@@ -107,7 +107,7 @@ public class PostServiceTest {
 
         SimpleSnsApplicationException exception =
                 Assertions.assertThrows(SimpleSnsApplicationException.class,
-                        () -> postService.delete(fixture.getUserName(), fixture.getPostId()));
+                        () -> postService.delete(fixture.getUserId(), fixture.getPostId()));
 
         Assertions.assertEquals(ErrorCode.POST_NOT_FOUND, exception.getErrorCode());
     }
@@ -121,7 +121,7 @@ public class PostServiceTest {
 
         SimpleSnsApplicationException exception =
                 Assertions.assertThrows(SimpleSnsApplicationException.class,
-                        () -> postService.delete(fixture.getUserName(), fixture.getPostId()));
+                        () -> postService.delete(fixture.getUserId(), fixture.getPostId()));
 
         Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
     }
@@ -139,7 +139,7 @@ public class PostServiceTest {
 
         SimpleSnsApplicationException exception =
                 Assertions.assertThrows(SimpleSnsApplicationException.class,
-                        () -> postService.delete(fixture.getUserName(), fixture.getPostId()));
+                        () -> postService.delete(fixture.getUserId(), fixture.getPostId()));
 
         Assertions.assertEquals(ErrorCode.INVALID_PERMISSION, exception.getErrorCode());
     }
@@ -150,7 +150,7 @@ public class PostServiceTest {
         when(userEntityRepository.findByUserName(fixture.getUserName())).thenReturn(Optional.empty());
 
         SimpleSnsApplicationException exception = Assertions.assertThrows(SimpleSnsApplicationException.class, () ->
-                postService.my(fixture.getUserName(), mock(Pageable.class)));
+                postService.my(fixture.getUserId(), mock(Pageable.class)));
 
         Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
     }
@@ -164,9 +164,10 @@ public class PostServiceTest {
 
     @Test
     void 내포스트목록요청이_성공한경우() {
+        TestInfoFixture.TestInfo fixture = TestInfoFixture.get();
         Pageable pageable = mock(Pageable.class);
-        when(postEntityRepository.findAllByUser(any(),pageable)).thenReturn(Page.empty());
-        Assertions.assertDoesNotThrow(() -> postService.my("",pageable));
+        when(postEntityRepository.findAllByUserId(any(),pageable)).thenReturn(Page.empty());
+        Assertions.assertDoesNotThrow(() -> postService.my(fixture.getUserId(), pageable));
     }
 
 

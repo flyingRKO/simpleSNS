@@ -16,7 +16,6 @@ public class Post {
     private String title;
     private String body;
     private User user;
-    private List<Comment> comments;
     private Timestamp registeredAt;
     private Timestamp updatedAt;
     private Timestamp removedAt;
@@ -27,7 +26,6 @@ public class Post {
                 entity.getTitle(),
                 entity.getBody(),
                 User.fromEntity(entity.getUser()),
-                entity.getComments().stream().map(Comment::fromEntity).collect(Collectors.toList()),
                 entity.getRegisteredAt(),
                 entity.getUpdatedAt(),
                 entity.getRemovedAt()
