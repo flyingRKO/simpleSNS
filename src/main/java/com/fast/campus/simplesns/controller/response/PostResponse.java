@@ -15,8 +15,6 @@ public class PostResponse {
     private String title;
     private String body;
     private UserResponse user;
-    private List<CommentResponse> comments;
-    private List<LikeResponse> likes;
     private Timestamp registeredAt;
     private Timestamp updatedAt;
 
@@ -26,8 +24,6 @@ public class PostResponse {
                 post.getTitle(),
                 post.getBody(),
                 UserResponse.fromUser(post.getUser()),
-                post.getComments().stream().map(CommentResponse::fromComment).collect(Collectors.toList()),
-                post.getLikes().stream().map(LikeResponse::fromLike).collect(Collectors.toList()),
                 post.getRegisteredAt(),
                 post.getUpdatedAt()
         );
